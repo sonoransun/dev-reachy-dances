@@ -177,3 +177,40 @@ All 20 dance moves currently available in the library, with more to come!
 </table>
 
 *Tip: Run `python examples/dance_demo.py` to cycle through each move with keyboard controls!*
+
+## Contributing
+
+We welcome contributions from the community! If you want to report a bug or request a feature, please open an issue on GitHub. If you want to contribute code, please fork the repository and submit a pull request. If you're adding new moves, use this guide to create GIFs for the gallery:
+
+### Recording GIFs for the gallery
+
+1. **Stage the dances**
+   - Add the dance move(s) to a JSON file in `examples/choreographies/` (or modify `another_one_bites_the_dust.json`)
+
+2. **Run the dance moves**
+
+   ```bash
+   python examples/dance_demo.py --choreography ./examples/choreographies/<your-dances>.json --no-keyboard
+   ```
+
+3. **Record the MuJoCo window**
+   - Use any GIF-capable screen recorder (CleanShot X on macOS, ShareX or Snipping Tool on Windows 11)
+   - ***Pro tip:** Record multiple dances in one take (using the JSON file in *step 1*) to maintain consistent dimensions and save cropping effort*
+
+4. **Slice individual clips (if multiple dances are recorded in one take)**
+
+   - Use the start and end time of each move for `-ss` and `-to`
+   - GIFs do not have to loop smoothly at this point, we will trim it in the next step
+
+   ```bash
+   ffmpeg -i all-dances.gif -ss 0 -to 3 -an <dance-move-name>.gif
+   ```
+
+5. **Trim the GIF**
+   - Use Preview (on macOS, double click file > View > Thumbnail) or any GIF editor to trim the GIF so it loops smoothly
+      - **Roughly match first and last frame**: Look at the first frame, then look for the **next closest frame that will lead into the first frame**, select and delete all frames after that point (shift click + delete)
+   - Ensure GIF looping metadata and optimize file size with gifsicle:
+
+  ```bash
+  gifsicle --colors 256 -O3 --loopcount=0 -b --no-conserve-memory *.gif
+  ```
