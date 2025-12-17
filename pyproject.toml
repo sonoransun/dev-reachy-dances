@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "reachy_mini_dances_library"
-version = "0.2.0"
+version = "0.2.1"
 authors = [{ name = "Pollen Robotics", email = "contact@pollen-robotics.com" }]
 description = ""
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 dependencies = [
-    "reachy_mini==0.1.0", # Not released yet (should be soon)
+    "reachy_mini", # Not released yet (should be soon)
     # "reachy_mini@git+ssh://git@github.com/pollen-robotics/reachy_mini@develop",
 ]
 
