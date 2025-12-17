@@ -261,7 +261,7 @@ def main(config: Config) -> None:
     last_status_print_time, last_help_print_time = 0.0, 0.0
     bpm, amplitude_scale = config.bpm, config.amplitude_scale
 
-    with ReachyMini(use_sim=False) as mini:
+    with ReachyMini(media_backend="no_media") as mini:
         try:
             print("Connecting to Reachy Mini...")
 
