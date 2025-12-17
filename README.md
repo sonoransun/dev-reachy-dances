@@ -36,7 +36,7 @@ This library brings your Reachy Mini to life with 20 pre-built dance moves and a
 - **20 Pre-built Moves** - Ready-to-run dances from subtle nods to complex routines
 - **BPM Adjustments** - Keep every motion locked to the beat
 - **Custom Choreography** - Combine motion primitives or load JSON choreographies to build your own routines
-- **Interactive Mode** - Preview and test moves using keyboard controls
+- **Autonomous Preview** - Cycle through moves automatically to spot-check animations
 
 ## Installation
 
@@ -48,25 +48,19 @@ pip install -e .
 
 ## Usage
 
-Explore all available moves with interactive mode
+Explore all available moves with the autonomous preview
 ```bash
 python examples/dance_demo.py
 ```
 
-**Controls:**
-- `Right` or `Left` - Next / previous move
-- `Space` or `P` - Pause / resume motion
-- `W` - Cycle waveform
-- `-` or `+` - Adjust amplitude
-- `Up` or `Down` - Adjust BPM
-- `Ctrl+C` or `Q` - Quit
+The script continuously cycles through each move; press `Ctrl+C` to stop.
 
 ### Run a Choreography
 
 Execute a pre-defined dance sequence:
 
 ```bash
-python examples/dance_demo.py --choreography ./examples/choreographies/another_one_bites_the_dust.json --no-keyboard
+python examples/dance_demo.py --choreography ./examples/choreographies/another_one_bites_the_dust.json
 ```
 
 ## Complete Move Library
@@ -176,7 +170,7 @@ All 20 dance moves currently available in the library, with more to come!
   </tr>
 </table>
 
-*Tip: Run `python examples/dance_demo.py` to cycle through each move with keyboard controls!*
+*Tip: Run `python examples/dance_demo.py` to cycle through each move automatically!*
 
 ## Contributing
 
@@ -190,7 +184,7 @@ We welcome contributions from the community! If you want to report a bug or requ
 2. **Run the dance moves**
 
    ```bash
-   python examples/dance_demo.py --choreography ./examples/choreographies/<your-dances>.json --no-keyboard
+   python examples/dance_demo.py --choreography ./examples/choreographies/<your-dances>.json
    ```
 
 3. **Record the MuJoCo window**
