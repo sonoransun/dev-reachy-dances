@@ -38,6 +38,97 @@ This library brings your Reachy Mini to life with 20 pre-built dance moves and a
 - **Custom Choreography** - Combine motion primitives or load JSON choreographies to build your own routines
 - **Autonomous Preview** - Cycle through moves automatically to spot-check animations
 
+## How It Works
+
+The library uses a compositional architecture: small, single-axis motion primitives are layered together to build complex dance moves, which are then sequenced into full choreographies.
+
+### Architecture Overview
+
+```mermaid
+graph TD
+    subgraph "Layer 1 — Motion Primitives"
+        OSC["oscillation_motion()<br/><i>sin, cos, square, triangle, sawtooth</i>"]
+        TRN["transient_motion()<br/><i>one-shot eased actions</i>"]
+    end
+
+    subgraph "Layer 2 — Atomic Moves"
+        POS["Position<br/>atomic_x_pos / y_pos / z_pos"]
+        ORI["Orientation<br/>atomic_roll / pitch / yaw"]
+        ANT["Antennas<br/>atomic_antenna_wiggle / both"]
+    end
+
+    subgraph "Layer 3 — Named Moves"
+        COMBINE["combine_offsets()"]
+        MOVES["AVAILABLE_MOVES<br/><i>20 named dance moves</i>"]
+    end
+
+    subgraph "Layer 4 — Playback"
+        DM["DanceMove"]
+        CHOREO["Choreography"]
+    end
+
+    OSC --> POS
+    OSC --> ORI
+    OSC --> ANT
+    TRN --> POS
+    TRN --> ORI
+
+    POS --> COMBINE
+    ORI --> COMBINE
+    ANT --> COMBINE
+    COMBINE --> MOVES
+
+    MOVES --> DM
+    DM --> CHOREO
+```
+
+### Move Composition
+
+Each named move layers multiple atomic motions together. The `combine_offsets()` function additively sums position, orientation, and antenna arrays so that independent axis motions can be mixed freely.
+
+```mermaid
+graph LR
+    subgraph "move_dizzy_spin(t_beats)"
+        RP["OscillationParams<br/>roll"]
+        PP["OscillationParams<br/>pitch (+0.25 phase)"]
+        AP["OscillationParams<br/>antennas"]
+
+        RP --> R["atomic_roll()"]
+        PP --> P["atomic_pitch()"]
+        AP --> A["atomic_antenna_wiggle()"]
+    end
+
+    R --> CO["combine_offsets()"]
+    P --> CO
+    A --> CO
+    CO --> MO["MoveOffsets<br/>position[3] + orientation[3] + antennas[2]"]
+```
+
+### Playback Pipeline
+
+The playback system converts wall-clock time into beat time, evaluates the current move, and sends joint positions to the robot.
+
+```mermaid
+sequenceDiagram
+    participant JSON as Choreography JSON
+    participant C as Choreography
+    participant DM as DanceMove
+    participant MF as Move Function
+    participant R as Reachy Mini
+
+    JSON->>C: Load sequence + BPM
+    loop For each move in sequence
+        C->>DM: play_on(repeat=cycles)
+        loop At control frequency (100 Hz)
+            DM->>DM: t_beats = t_seconds * BPM / 60
+            DM->>MF: move_fn(t_beats, **params)
+            MF-->>DM: MoveOffsets
+            DM->>DM: base_pose + offsets
+            DM->>R: set head pose + antennas
+        end
+    end
+```
+
 ## Installation
 
 Requires Python 3.10+ and installs the `reachy_mini` dependency.
@@ -62,6 +153,28 @@ Execute a pre-defined dance sequence:
 ```bash
 python examples/dance_demo.py --choreography ./examples/choreographies/another_one_bites_the_dust.json
 ```
+
+### Choreography JSON Format
+
+Define custom routines as a JSON file with a BPM and an ordered sequence of moves:
+
+```json
+{
+  "bpm": 114,
+  "sequence": [
+    {"move": "dizzy_spin",    "cycles": 4, "amplitude": 1.0},
+    {"move": "jackson_square", "cycles": 2, "amplitude": 0.8},
+    {"move": "chicken_peck",  "cycles": 6, "amplitude": 1.2}
+  ]
+}
+```
+
+| Field       | Description                                                      |
+|-------------|------------------------------------------------------------------|
+| `bpm`       | Beats per minute — controls the tempo of the entire routine      |
+| `move`      | Name of a move from `AVAILABLE_MOVES`                            |
+| `cycles`    | Number of oscillation cycles to play for this step               |
+| `amplitude` | Multiplier applied to all amplitude parameters (default `1.0`)   |
 
 ## Complete Move Library
 

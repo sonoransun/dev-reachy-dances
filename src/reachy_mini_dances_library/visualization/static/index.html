@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reachy Mini Dance Visualizer</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+    <header id="controls">
+        <div class="control-group">
+            <label for="move-select">Move</label>
+            <select id="move-select"></select>
+        </div>
+        <div class="control-group">
+            <label for="bpm-slider">BPM <span id="bpm-value">114</span></label>
+            <input type="range" id="bpm-slider" min="40" max="200" value="114" step="1">
+        </div>
+        <div class="control-group">
+            <label for="amp-slider">Amplitude <span id="amp-value">1.0</span></label>
+            <input type="range" id="amp-slider" min="0.1" max="3.0" value="1.0" step="0.1">
+        </div>
+        <div class="control-group">
+            <label for="speed-select">Speed</label>
+            <select id="speed-select">
+                <option value="0.25">0.25x</option>
+                <option value="0.5">0.5x</option>
+                <option value="1" selected>1x</option>
+                <option value="1.5">1.5x</option>
+                <option value="2">2x</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <button id="play-btn">&#9654; Play</button>
+        </div>
+        <div class="control-group">
+            <span id="beat-counter">Beat: 0.00</span>
+        </div>
+        <div class="control-group">
+            <label for="choreo-upload">Choreography</label>
+            <input type="file" id="choreo-upload" accept=".json">
+        </div>
+    </header>
+    <div id="description-bar"></div>
+    <main id="viewport">
+        <div id="scene-container"></div>
+        <div id="plot-container">
+            <div id="plot-position"></div>
+            <div id="plot-orientation"></div>
+            <div id="plot-antennas"></div>
+        </div>
+    </main>
+
+    <script src="scene.js"></script>
+    <script src="plots.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

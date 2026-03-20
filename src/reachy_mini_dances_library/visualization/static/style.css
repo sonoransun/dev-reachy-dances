@@ -1,0 +1,120 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 16px;
+    background: #16213e;
+    border-bottom: 1px solid #0f3460;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.control-group label {
+    font-size: 12px;
+    color: #a0a0c0;
+    white-space: nowrap;
+}
+
+select, button {
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid #0f3460;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+button {
+    background: #0f3460;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #1a5276;
+}
+
+input[type="range"] {
+    width: 120px;
+    accent-color: #e94560;
+}
+
+input[type="file"] {
+    font-size: 12px;
+    max-width: 160px;
+}
+
+#beat-counter {
+    font-family: "Courier New", monospace;
+    font-size: 14px;
+    color: #e94560;
+    min-width: 100px;
+}
+
+#description-bar {
+    padding: 6px 16px;
+    background: #16213e;
+    border-bottom: 1px solid #0f3460;
+    font-size: 12px;
+    color: #a0a0c0;
+    min-height: 28px;
+}
+
+#viewport {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    padding: 4px;
+    min-height: 0;
+}
+
+#scene-container {
+    background: #0a0a1a;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+}
+
+#plot-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-height: 0;
+}
+
+#plot-position, #plot-orientation, #plot-antennas {
+    flex: 1;
+    background: #0a0a1a;
+    border-radius: 6px;
+    min-height: 0;
+    position: relative;
+}
+
+@media (max-width: 900px) {
+    #viewport {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+    }
+}

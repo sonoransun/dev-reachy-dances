@@ -860,6 +860,84 @@ def move_pendulum_swing(
     return combine_offsets([base, antennas])
 
 
+def move_genrand(
+    t_beats: float,
+    roll_amp: float,
+    pitch_amp: float,
+    yaw_amp: float,
+    sway_amp_m: float,
+    antenna_amplitude_rad: float,
+    subcycles_per_beat: float,
+    antenna_move_name: str = "wiggle",
+    phase_offset: float = 0.0,
+    waveform: str = "sin",
+) -> MoveOffsets:
+    """Generate a flowing motion that blends spiral rotations, side sway, and a nod.
+
+    The roll and yaw axes oscillate at offset frequencies to create a slow
+    spiral feel, while the pitch axis adds a faster nod and the Y-axis
+    provides a gentle side-to-side sway.
+
+    Args:
+        t_beats (float): Continuous time in beats at which to evaluate the motion,
+            increases by 1 every beat. t_beats [dimensionless] =
+            time_in_seconds [seconds] * frequency [hertz].
+        roll_amp (float): The amplitude of the roll component in radians.
+        pitch_amp (float): The amplitude of the pitch nod in radians.
+        yaw_amp (float): The amplitude of the yaw component in radians.
+        sway_amp_m (float): The amplitude of the side-to-side sway in meters.
+        antenna_amplitude_rad (float): The amplitude of the antenna motion in radians.
+        subcycles_per_beat (float): Base number of movement oscillations per beat.
+        antenna_move_name (str): The style of antenna motion (e.g. 'wiggle' or 'both').
+        phase_offset (float): A normalized phase offset for the motion as a fraction of a cycle.
+            0.5 shifts by half a period.
+        waveform (str): The shape of the oscillation.
+
+    Returns:
+        MoveOffsets: The calculated motion offsets.
+
+    """
+    base_params = OscillationParams(0, subcycles_per_beat, phase_offset, waveform)
+
+    # Slow roll for the spiral feel
+    roll_params = replace(
+        base_params, amplitude=roll_amp, subcycles_per_beat=subcycles_per_beat * 0.5
+    )
+
+    # Faster pitch nod at double the base rate
+    pitch_params = replace(
+        base_params,
+        amplitude=pitch_amp,
+        subcycles_per_beat=subcycles_per_beat * 2.0,
+        phase_offset=phase_offset + 0.25,
+    )
+
+    # Yaw at a slightly different rate for the interwoven spiral quality
+    yaw_params = replace(
+        base_params,
+        amplitude=yaw_amp,
+        subcycles_per_beat=subcycles_per_beat * 0.75,
+        phase_offset=phase_offset + 0.5,
+    )
+
+    # Side-to-side sway locked to the roll for a groovy coupling
+    sway_params = replace(
+        base_params,
+        amplitude=sway_amp_m,
+        subcycles_per_beat=subcycles_per_beat * 0.5,
+        phase_offset=phase_offset + 0.25,
+    )
+
+    antenna_params = replace(base_params, amplitude=antenna_amplitude_rad)
+
+    roll = atomic_roll(t_beats, roll_params)
+    pitch = atomic_pitch(t_beats, pitch_params)
+    yaw = atomic_yaw(t_beats, yaw_params)
+    sway = atomic_y_pos(t_beats, sway_params)
+    antennas = AVAILABLE_ANTENNA_MOVES[antenna_move_name](t_beats, antenna_params)
+    return combine_offsets([roll, pitch, yaw, sway, antennas])
+
+
 def move_jackson_square(
     t_beats: float,
     y_amp_m: float,
@@ -1203,6 +1281,21 @@ AVAILABLE_MOVES: dict[
         {
             "default_duration_beats": 4,
             "description": "A simple, smooth pendulum-like swing using a roll motion.",
+        },
+    ),
+    "genrand": (
+        move_genrand,
+        {
+            "roll_amp": np.deg2rad(15),
+            "pitch_amp": np.deg2rad(12),
+            "yaw_amp": np.deg2rad(18),
+            "sway_amp_m": 0.025,
+            "subcycles_per_beat": 0.5,
+            **DEFAULT_ANTENNA_PARAMS,
+        },
+        {
+            "default_duration_beats": 8,
+            "description": "A flowing blend of spiral rotations, side sway, and a nod.",
         },
     ),
     "jackson_square": (
